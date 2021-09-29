@@ -1,3 +1,5 @@
+// getRawBuffer builds the VGM data
+
 // Wave shapes
 var SQUARE = 0;
 var SAWTOOTH = 1;
@@ -194,7 +196,7 @@ Params.prototype.fromJSON = function(struct) {
 // typical game events:
 
 Params.prototype.pickupCoin = function () {
-  this.wave_type = SAWTOOTH;
+  this.wave_type = SQUARE; //SAWTOOTH
   this.p_base_freq = 0.4 + frnd(0.5);
   this.p_env_attack = 0;
   this.p_env_sustain = frnd(0.1);
@@ -221,6 +223,7 @@ Params.prototype.laserShoot = function () {
     if (this.p_freq_limit < 0.2) this.p_freq_limit = 0.2;
     this.p_freq_ramp = -0.15 - frnd(0.2);
   }
+/*
   if (this.wave_type === SAWTOOTH)
     this.p_duty = 1;
   if (rnd(1)) {
@@ -230,6 +233,7 @@ Params.prototype.laserShoot = function () {
     this.p_duty = 0.4 + frnd(0.5);
     this.p_duty_ramp = -frnd(0.7);
   }
+*/
   this.p_env_attack = 0;
   this.p_env_sustain = 0.1 + frnd(0.2);
   this.p_env_decay = frnd(0.4);
@@ -241,6 +245,11 @@ Params.prototype.laserShoot = function () {
   }
   //if (rnd(1))
     this.p_hpf_freq = frnd(0.3);
+
+  if (this.wave_type === SAWTOOTH)
+    this.wave_type = SQUARE;
+  if (this.wave_type == SINE)
+    this.wave_type = NOISE;
 
   return this;
 }
@@ -280,10 +289,10 @@ Params.prototype.explosion = function () {
 
 Params.prototype.powerUp = function () {
   if (rnd(1)) {
-    this.wave_type = SAWTOOTH;
-    this.p_duty = 1;
-  } else {
-    this.p_duty = frnd(0.6);
+    this.wave_type = SQUARE; //SAWTOOTH;
+//    this.p_duty = 1;
+//  } else {
+//    this.p_duty = frnd(0.6);
   }
   this.p_base_freq = 0.2 + frnd(0.3);
   if (rnd(1)) {
@@ -307,10 +316,10 @@ Params.prototype.hitHurt = function () {
   this.wave_type = rnd(2);
   if (this.wave_type === SINE)
     this.wave_type = NOISE;
-  if (this.wave_type === SQUARE)
-    this.p_duty = frnd(0.6);
-  if (this.wave_type === SAWTOOTH)
-    this.p_duty = 1;
+//  if (this.wave_type === SQUARE)
+//    this.p_duty = frnd(0.6);
+//  if (this.wave_type === SAWTOOTH)
+//    this.p_duty = 1;
   this.p_base_freq = 0.2 + frnd(0.6);
   this.p_freq_ramp = -0.3 - frnd(0.4);
   this.p_env_attack = 0;
@@ -318,30 +327,38 @@ Params.prototype.hitHurt = function () {
   this.p_env_decay = 0.1 + frnd(0.2);
   if (rnd(1))
     this.p_hpf_freq = frnd(0.3);
+
+  if (this.wave_type === SAWTOOTH)
+    this.wave_type = SQUARE;
+  if (this.wave_type == SINE)
+    this.wave_type = NOISE;
+
   return this;
 }
 
 Params.prototype.jump = function () {
   this.wave_type = SQUARE;
-  this.p_duty = frnd(0.6);
+//  this.p_duty = frnd(0.6);
   this.p_base_freq = 0.3 + frnd(0.3);
   this.p_freq_ramp = 0.1 + frnd(0.2);
   this.p_env_attack = 0;
   this.p_env_sustain = 0.1 + frnd(0.3);
   this.p_env_decay = 0.1 + frnd(0.2);
+/*
   if (rnd(1))
     this.p_hpf_freq = frnd(0.3);
   if (rnd(1))
     this.p_lpf_freq = 1 - frnd(0.6);
+*/
   return this;
 }
 
 Params.prototype.blipSelect = function () {
-  this.wave_type = rnd(1);
-  if (this.wave_type === SQUARE)
-    this.p_duty = frnd(0.6);
-  else
-    this.p_duty = 1;
+  this.wave_type = SQUARE; //rnd(1);
+//  if (this.wave_type === SQUARE)
+//    this.p_duty = frnd(0.6);
+//  else
+//    this.p_duty = 1;
   this.p_base_freq = 0.2 + frnd(0.4);
   this.p_env_attack = 0;
   this.p_env_sustain = 0.1 + frnd(0.1);
@@ -351,7 +368,7 @@ Params.prototype.blipSelect = function () {
 }
 
 Params.prototype.synth = function () {
-  this.wave_type = rnd(1);
+  this.wave_type = SQUARE; //rnd(1);
   this.p_base_freq = [0.2723171360931539, 0.19255692561524382, 0.13615778746815113][rnd(2)];
   this.p_env_attack = rnd(4) > 3 ? frnd(0.5) : 0;
   this.p_env_sustain = frnd(1);
@@ -359,18 +376,20 @@ Params.prototype.synth = function () {
   this.p_env_decay = frnd(0.9) + 0.1;
   this.p_arp_mod = [0, 0, 0, 0, -0.3162, 0.7454, 0.7454][rnd(6)];
   this.p_arp_speed = frnd(0.5) + 0.4;
-  this.p_duty = frnd(1);
-  this.p_duty_ramp = rnd(2) == 2 ? frnd(1) : 0;
+//  this.p_duty = frnd(1);
+//  this.p_duty_ramp = rnd(2) == 2 ? frnd(1) : 0;
+/*
   this.p_lpf_freq = [1, frnd(1) * frnd(1)][rnd(1)];
   this.p_lpf_ramp = rndr(-1, 1);
   this.p_lpf_resonance = frnd(1);
   this.p_hpf_freq = rnd(3) == 3 ? frnd(1) : 0;
   this.p_hpf_ramp = rnd(3) == 3 ? frnd(1) : 0;
+*/
   return this;
 }
 
 Params.prototype.tone = function () {
-  this.wave_type = SINE;
+  this.wave_type = SQUARE; //SINE;
   this.p_base_freq = 0.35173364; // 440 Hz
   this.p_env_attack = 0;
   this.p_env_sustain = 0.6641; // 1 sec
@@ -410,8 +429,8 @@ Params.prototype.random = function () {
   if (this.p_base_freq < 0.2 && this.p_freq_ramp < -0.05)
     this.p_freq_ramp = -this.p_freq_ramp;
   this.p_freq_dramp = Math.pow(frnd(2) - 1, 3);
-  this.p_duty = frnd(2) - 1;
-  this.p_duty_ramp = Math.pow(frnd(2) - 1, 3);
+//  this.p_duty = frnd(2) - 1;
+//  this.p_duty_ramp = Math.pow(frnd(2) - 1, 3);
   this.p_vib_strength = Math.pow(frnd(2) - 1, 3);
   this.p_vib_speed = rndr(-1, 1);
   this.p_env_attack = cube(rndr(-1, 1));
@@ -422,6 +441,7 @@ Params.prototype.random = function () {
     this.p_env_sustain += 0.2 + frnd(0.3);
     this.p_env_decay += 0.2 + frnd(0.3);
   }
+/*
   this.p_lpf_resonance = rndr(-1, 1);
   this.p_lpf_freq = 1 - Math.pow(frnd(1), 3);
   this.p_lpf_ramp = Math.pow(frnd(2) - 1, 3);
@@ -429,11 +449,18 @@ Params.prototype.random = function () {
     this.p_lpf_ramp = -this.p_lpf_ramp;
   this.p_hpf_freq = Math.pow(frnd(1), 5);
   this.p_hpf_ramp = Math.pow(frnd(2) - 1, 5);
+*/
   this.p_pha_offset = Math.pow(frnd(2) - 1, 3);
   this.p_pha_ramp = Math.pow(frnd(2) - 1, 3);
   this.p_repeat_speed = frnd(2) - 1;
   this.p_arp_speed = frnd(2) - 1;
   this.p_arp_mod = frnd(2) - 1;
+
+  if (this.wave_type === SAWTOOTH)
+    this.wave_type = SQUARE;
+  if (this.wave_type == SINE)
+    this.wave_type = NOISE;
+
   return this;
 }
 
@@ -441,8 +468,8 @@ Params.prototype.mutate = function () {
   if (rnd(1)) this.p_base_freq += frnd(0.1) - 0.05;
   if (rnd(1)) this.p_freq_ramp += frnd(0.1) - 0.05;
   if (rnd(1)) this.p_freq_dramp += frnd(0.1) - 0.05;
-  if (rnd(1)) this.p_duty += frnd(0.1) - 0.05;
-  if (rnd(1)) this.p_duty_ramp += frnd(0.1) - 0.05;
+//  if (rnd(1)) this.p_duty += frnd(0.1) - 0.05;
+//  if (rnd(1)) this.p_duty_ramp += frnd(0.1) - 0.05;
   if (rnd(1)) this.p_vib_strength += frnd(0.1) - 0.05;
   if (rnd(1)) this.p_vib_speed += frnd(0.1) - 0.05;
   if (rnd(1)) this.p_vib_delay += frnd(0.1) - 0.05;
@@ -450,11 +477,13 @@ Params.prototype.mutate = function () {
   if (rnd(1)) this.p_env_sustain += frnd(0.1) - 0.05;
   if (rnd(1)) this.p_env_decay += frnd(0.1) - 0.05;
   if (rnd(1)) this.p_env_punch += frnd(0.1) - 0.05;
+/*
   if (rnd(1)) this.p_lpf_resonance += frnd(0.1) - 0.05;
   if (rnd(1)) this.p_lpf_freq += frnd(0.1) - 0.05;
   if (rnd(1)) this.p_lpf_ramp += frnd(0.1) - 0.05;
   if (rnd(1)) this.p_hpf_freq += frnd(0.1) - 0.05;
   if (rnd(1)) this.p_hpf_ramp += frnd(0.1) - 0.05;
+*/
   if (rnd(1)) this.p_pha_offset += frnd(0.1) - 0.05;
   if (rnd(1)) this.p_pha_ramp += frnd(0.1) - 0.05;
   if (rnd(1)) this.p_repeat_speed += frnd(0.1) - 0.05;
@@ -507,6 +536,7 @@ sfxr.b58decode = function(b58encoded) {
       result[p] = numberToFloat(val);
     }
   }
+
   return result;
 }
 
@@ -615,10 +645,25 @@ SoundEffect.prototype.getRawBuffer = function () {
   var num_clipped = 0;
 
   var buffer = [];
+  var vgm = [
+    0x56,0x67,0x6D,0x20,0x0B,0x1F,0x00,0x00,0x10,0x01,0x00,0x00,0x94,0x9E,0x36,0x00,
+    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x91,0xD4,0x12,0x00,0x40,0x02,0x00,0x00,
+    0x00,0x3A,0x11,0x00,0x3C,0x00,0x00,0x00,0x00,0x00,0x0f,0x00,0x00,0x00,0x00,0x00,
+    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+  ];
 
   var sample_sum = 0;
   var num_summed = 0;
   var summands = Math.floor(44100 / this.sampleRate);
+
+  // every 735 samples is 1/60th second
+  var outcnt = 0;
+
+  // set the noise type, if it's noise
+  if (this.waveShape === NOISE) {
+    vgm.push(0x50);
+    vgm.push(0xe7);  // noise type - white noise on channel 3
+  }
 
   for(var t = 0; ; ++t) {
 
@@ -639,6 +684,10 @@ SoundEffect.prototype.getRawBuffer = function () {
       this.period = this.periodMax;
       if (this.enableFrequencyCutoff)
         break;
+    }
+    // SN check
+    if (this.period > 3222) {
+      this.period = 3222;  // determined by observation that gets 0x3ff
     }
 
     // Vibrato
@@ -781,11 +830,50 @@ SoundEffect.prototype.getRawBuffer = function () {
       buffer.push(sample & 0xFF);
       buffer.push((sample >> 8) & 0xFF);
     }
+
+    // now check out the basic
+    ++outcnt;
+    if (outcnt >= 735) {
+      outcnt = 0;
+      // output the current volume and frequency
+      var code = Math.round(iperiod/3.15);  // determined by observation
+      if (this.waveShape === SQUARE) {
+        // just channel 0
+        vgm.push(0x50);
+        vgm.push((code&0xf)+0x80);
+        vgm.push(0x50);
+        vgm.push((code>>4)&0xff);
+        vgm.push(0x50);
+        vgm.push(15-Math.floor(env_vol*15)+0x90);
+      } else {
+        // channel 2 and noise
+        code /= 15;  // noise shift rate
+        vgm.push(0x50);
+        vgm.push((code&0xf)+0xc0);
+        vgm.push(0x50);
+        vgm.push((code>>4)&0xff);
+        vgm.push(0x50);
+        vgm.push(0xdf);  // mute tone
+        vgm.push(0x50);
+        vgm.push(15-Math.floor(env_vol*10)+0xf0);
+      }
+      vgm.push(0x62);  // 1 frame delay
+    }
   }
-  
+
+  // all done, mute the channels
+  if (this.waveShape === SQUARE) {
+    vgm.push(0x50);
+    vgm.push(0x9f);
+  } else {
+    vgm.push(0x50);
+    vgm.push(0xff);
+  }
+
   return {
     "buffer": buffer,
     "clipped": num_clipped,
+    "vgm": vgm,
   }
 }
 
@@ -799,6 +887,9 @@ SoundEffect.prototype.generate = function() {
   wave.clipping = rendered.clipped;
   wave.buffer = normalized;
   wave.getAudio = _sfxr_getAudioFn(wave);
+
+  wave.loadvgm(rendered.vgm);
+
   return wave;
 }
 

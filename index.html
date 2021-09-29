@@ -38,10 +38,10 @@ function gen(fx) {
   PARAMS.sample_size = SAMPLE_SIZE;
   if (fx.indexOf("#") == 0) {
     PARAMS.fromB58(fx.slice(1));
-    $("#wav").text("random.wav");
+    $("#wav").text("random.vgm");
   } else {
     PARAMS[fx]();
-    $("#wav").text(fx + ".wav");
+    $("#wav").text(fx + ".vgm");
   }
   updateUi();
   play();
@@ -69,7 +69,8 @@ function play(noregen) {
       $("#clipping").text(SOUND.clipping);
     }
     
-    $("#wav").attr("href", SOUND.dataURI)  ;
+//    $("#wav").attr("href", SOUND.dataURI)  ;
+    $("#wav").attr("href", SOUND.vgmdata)  ;
     $("#sfx").attr("href", "sfx.wav?" + PARAMS.query());
     
     SOUND.getAudio().play();
@@ -98,8 +99,14 @@ function deserialize_params() {
 
 function disenable() {
   var duty = PARAMS.wave_type == SQUARE || PARAMS.wave_type == SAWTOOTH;
-  $("#p_duty").slider("option", "disabled", !duty);
-  $("#p_duty_ramp").slider("option", "disabled", !duty);
+  $("#p_duty").slider("option", "disabled", 1);
+  $("#p_duty_ramp").slider("option", "disabled", 1); //!duty
+
+  $("#p_lpf_freq").slider("option", "disabled", 1);
+  $("#p_lpf_ramp").slider("option", "disabled", 1);
+  $("#p_lpf_resonance").slider("option", "disabled", 1);
+  $("#p_hpf_freq").slider("option", "disabled", 1);
+  $("#p_hpf_ramp").slider("option", "disabled", 1);
 }
 
 function updateUi() {
@@ -226,7 +233,7 @@ $(function() {
     p_env_punch:   function (v) { return v },
     p_env_decay:   function (v) { return v * v * 100000.0 },
     
-    p_base_freq:  function (v) { return 8 * 44100 * (v * v + 0.001) / 100 },
+    p_base_freq:  function (v) { var h = 8 * 44100 * (v * v + 0.001) / 100; if (h < 110) return 110; else return h; },
     p_freq_limit: function (v) { return 8 * 44100 * (v * v + 0.001) / 100 },
     p_freq_ramp:  function (v) { return 1.0 - Math.pow(v, 3.0) * 0.01 },
     p_freq_dramp: function (v) { return -Math.pow(v, 3.0) * 0.000001 },
@@ -477,11 +484,11 @@ a {
 <h2>Manual Settings</h2>
 <form>
   <div id="shape">
-    <input type="radio" id="square" value=0 name="shape" />
+    <input type="radio" id="square" value=0 name="shape" checked="checked" />
       <label for="square">Square</label>
-    <input type="radio" id="sawtooth" value=1 name="shape" checked="checked" />
+    <input type="radio" id="sawtooth" value=1 name="shape" disabled />
       <label for="sawtooth">Sawtooth</label>
-    <input type="radio" id="sine" value=2 name="shape" />
+    <input type="radio" id="sine" value=2 name="shape" disabled />
       <label for="sine">Sine</label>
     <input type="radio" id="noise" value=3 name="shape" />
       <label for="noise">Noise</label>
