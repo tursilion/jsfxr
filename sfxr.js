@@ -847,7 +847,7 @@ SoundEffect.prototype.getRawBuffer = function () {
         vgm.push(15-Math.floor(env_vol*15)+0x90);
       } else {
         // channel 2 and noise
-        code /= 15;  // noise shift rate
+        code /= 15;  // noise shift rate (defined in VGM header)
         vgm.push(0x50);
         vgm.push((code&0xf)+0xc0);
         vgm.push(0x50);
