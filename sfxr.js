@@ -325,8 +325,8 @@ Params.prototype.hitHurt = function () {
   this.p_env_attack = 0;
   this.p_env_sustain = frnd(0.1);
   this.p_env_decay = 0.1 + frnd(0.2);
-  if (rnd(1))
-    this.p_hpf_freq = frnd(0.3);
+//  if (rnd(1))
+//    this.p_hpf_freq = frnd(0.3);
 
   if (this.wave_type === SAWTOOTH)
     this.wave_type = SQUARE;
@@ -412,7 +412,7 @@ Params.prototype.click = function() {
     this.p_env_attack = frnd(0.3);
   }
   this.p_base_freq = 1 - frnd(0.25);
-  this.p_hpf_freq = 1 - frnd(0.1);
+//  this.p_hpf_freq = 1 - frnd(0.1);
   return this;
 }
 
