@@ -645,12 +645,15 @@ SoundEffect.prototype.getRawBuffer = function () {
   var num_clipped = 0;
 
   var buffer = [];
-  var vgm = [
+  var vgm0 = [
     0x56,0x67,0x6D,0x20,0x0B,0x1F,0x00,0x00,0x10,0x01,0x00,0x00,0x94,0x9E,0x36,0x00,
     0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x91,0xD4,0x12,0x00,0x40,0x02,0x00,0x00,
     0x00,0x3A,0x11,0x00,0x3C,0x00,0x00,0x00,0x00,0x00,0x0f,0x00,0x00,0x00,0x00,0x00,
     0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
   ];
+  var vgm1 = [...vgm0];
+  var vgm2 = [...vgm0];
+  var vgm_samples = 0;
 
   var sample_sum = 0;
   var num_summed = 0;
@@ -661,8 +664,12 @@ SoundEffect.prototype.getRawBuffer = function () {
 
   // set the noise type, if it's noise
   if (this.waveShape === NOISE) {
-    vgm.push(0x50);
-    vgm.push(0xe7);  // noise type - white noise on channel 3
+    vgm0.push(0x50);
+    vgm0.push(0xe7);  // noise type - white noise on channel 3
+    vgm1.push(0x50);
+    vgm1.push(0xe7);  // noise type - white noise on channel 3
+    vgm2.push(0x50);
+    vgm2.push(0xe7);  // noise type - white noise on channel 3
   }
 
   for(var t = 0; ; ++t) {
@@ -740,9 +747,11 @@ SoundEffect.prototype.getRawBuffer = function () {
       phase++;
       if (phase >= iperiod) {
         phase %= iperiod;
-        if (this.waveShape === NOISE)
-          for(var i = 0; i < 32; ++i)
+        if (this.waveShape === NOISE) {
+          for(var i = 0; i < 32; ++i) {
             noise_buffer[i] = Math.random() * 2 - 1;
+          }
+        }
       }
 
       // Base waveform
@@ -839,41 +848,103 @@ SoundEffect.prototype.getRawBuffer = function () {
       var code = Math.round(iperiod/3.15);  // determined by observation
       if (this.waveShape === SQUARE) {
         // just channel 0
-        vgm.push(0x50);
-        vgm.push((code&0xf)+0x80);
-        vgm.push(0x50);
-        vgm.push((code>>4)&0xff);
-        vgm.push(0x50);
-        vgm.push(15-Math.floor(env_vol*15)+0x90);
+        vgm0.push(0x50);
+        vgm0.push((code&0xf)+0x80);
+        vgm0.push(0x50);
+        vgm0.push((code>>4)&0xff);
+        vgm0.push(0x50);
+        vgm0.push(15-Math.floor(env_vol*15)+0x90);
+
+        vgm1.push(0x50);
+        vgm1.push((code&0xf)+0xA0);
+        vgm1.push(0x50);
+        vgm1.push((code>>4)&0xff);
+        vgm1.push(0x50);
+        vgm1.push(15-Math.floor(env_vol*15)+0xB0);
+
+        vgm2.push(0x50);
+        vgm2.push((code&0xf)+0xC0);
+        vgm2.push(0x50);
+        vgm2.push((code>>4)&0xff);
+        vgm2.push(0x50);
+        vgm2.push(15-Math.floor(env_vol*15)+0xD0);
       } else {
         // channel 2 and noise
         code /= 15;  // noise shift rate (defined in VGM header)
-        vgm.push(0x50);
-        vgm.push((code&0xf)+0xc0);
-        vgm.push(0x50);
-        vgm.push((code>>4)&0xff);
-        vgm.push(0x50);
-        vgm.push(0xdf);  // mute tone
-        vgm.push(0x50);
-        vgm.push(15-Math.floor(env_vol*10)+0xf0);
+        vgm0.push(0x50);
+        vgm0.push((code&0xf)+0xc0);
+        vgm0.push(0x50);
+        vgm0.push((code>>4)&0xff);
+        vgm0.push(0x50);
+        vgm0.push(0xdf);  // mute tone
+        vgm0.push(0x50);
+        vgm0.push(15-Math.floor(env_vol*10)+0xf0);
+
+	vgm1=[...vgm0];
+	vgm2=[...vgm0];
       }
-      vgm.push(0x62);  // 1 frame delay
+      vgm0.push(0x62);  // 1 frame delay
+      vgm1.push(0x62);  // 1 frame delay
+      vgm2.push(0x62);  // 1 frame delay
+      vgm_samples += 735;
     }
   }
 
   // all done, mute the channels
   if (this.waveShape === SQUARE) {
-    vgm.push(0x50);
-    vgm.push(0x9f);
+    vgm0.push(0x50);
+    vgm0.push(0x9f);
+    vgm1.push(0x50);
+    vgm1.push(0xbf);
+    vgm2.push(0x50);
+    vgm2.push(0xdf);
   } else {
-    vgm.push(0x50);
-    vgm.push(0xff);
+    vgm0.push(0x50);
+    vgm0.push(0xff);
+    vgm1=[...vgm0];
+    vgm2=[...vgm0];
   }
+  // and end the data
+  vgm0.push(0x66);
+  vgm1.push(0x66);
+  vgm2.push(0x66);
+
+  // now we can go back and fix up the header
+  var len = vgm0.length-4;
+  vgm0[4]=len&0xff;	// data length
+  vgm0[5]=(len>>8)&0xff;
+  vgm0[6]=(len>>16)&0xff;
+  vgm0[7]=(len>>24)&0xff;
+
+  vgm0[0x18] = vgm_samples&0xff;	// length in samples
+  vgm0[0x19] = (vgm_samples>>8)&0xff;
+  vgm0[0x1a] = (vgm_samples>>16)&0xff;
+  vgm0[0x1b] = (vgm_samples>>24)&0xff;
+
+  vgm1[4]=vgm0[4];
+  vgm1[5]=vgm0[5];
+  vgm1[5]=vgm0[6];
+  vgm1[6]=vgm0[7];
+  vgm1[0x18]=vgm0[0x18];
+  vgm1[0x19]=vgm0[0x19];
+  vgm1[0x1a]=vgm0[0x1a];
+  vgm1[0x1b]=vgm0[0x1b];
+
+  vgm2[4]=vgm0[4];
+  vgm2[5]=vgm0[5];
+  vgm2[5]=vgm0[6];
+  vgm2[6]=vgm0[7];
+  vgm2[0x18]=vgm0[0x18];
+  vgm2[0x19]=vgm0[0x19];
+  vgm2[0x1a]=vgm0[0x1a];
+  vgm2[0x1b]=vgm0[0x1b];
 
   return {
     "buffer": buffer,
     "clipped": num_clipped,
-    "vgm": vgm,
+    "vgm0": vgm0,
+    "vgm1": vgm1,
+    "vgm2": vgm2,
   }
 }
 
@@ -888,7 +959,9 @@ SoundEffect.prototype.generate = function() {
   wave.buffer = normalized;
   wave.getAudio = _sfxr_getAudioFn(wave);
 
-  wave.loadvgm(rendered.vgm);
+  wave.loadvgm0(rendered.vgm0);
+  wave.loadvgm1(rendered.vgm1);
+  wave.loadvgm2(rendered.vgm2);
 
   return wave;
 }

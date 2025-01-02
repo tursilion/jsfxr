@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+   <meta name="fediverse:creator" content="@tursilion@furries.club" /> 
 <title>sn_jsfxr - 8 bit sound maker and online sfx generator</title>
 <meta name="description" content="A simple online 8 bit sound maker and sfx generator. You can also use it as a sound library in your JavaScript games.">
 
@@ -38,10 +39,14 @@ function gen(fx) {
   PARAMS.sample_size = SAMPLE_SIZE;
   if (fx.indexOf("#") == 0) {
     PARAMS.fromB58(fx.slice(1));
-    $("#wav").text("random.vgm");
+    $("#wav0").text("random0.vgm");
+    $("#wav1").text("random1.vgm");
+    $("#wav2").text("random2.vgm");
   } else {
     PARAMS[fx]();
-    $("#wav").text(fx + ".vgm");
+    $("#wav0").text(fx + "0.vgm");
+    $("#wav1").text(fx + "1.vgm");
+    $("#wav2").text(fx + "2.vgm");
   }
   updateUi();
   play();
@@ -70,7 +75,12 @@ function play(noregen) {
     }
     
 //    $("#wav").attr("href", SOUND.dataURI)  ;
-    $("#wav").attr("href", SOUND.vgmdata)  ;
+    $("#wav0").attr("href", SOUND.vgmdata0)  ;
+    $("#wav1").attr("href", SOUND.vgmdata1)  ;
+    $("#wav2").attr("href", SOUND.vgmdata2)  ;
+    $("#wav0").attr("download", $("#wav0").text()) ;
+    $("#wav1").attr("download", $("#wav1").text()) ;
+    $("#wav2").attr("download", $("#wav2").text()) ;
     $("#sfx").attr("href", "sfx.wav?" + PARAMS.query());
     
     SOUND.getAudio().play();
@@ -185,7 +195,7 @@ $(function() {
       return (44100*Math.log(v)/Math.log(0.5)).toPrecision(4) + ' 8va/sec'; },
     p_freq_dramp: function (v) { 
       return (v*44100 / Math.pow(2, -44101./44100)).toPrecision(4) + 
-        ' 8va/sec^2?'; },
+        ' 8va/s^2?'; },
 
     p_vib_speed:    function (v) { return v === 0 ? 'OFF' : 
                                    (441000/64. * v).toPrecision(4) + ' Hz'},
@@ -309,7 +319,13 @@ button, #soundexport, #sound_vol {
   width: 80px;
 }
 
-#wav {
+#wav0 {
+  font-weight: bold;
+}
+#wav1 {
+  font-weight: bold;
+}
+#wav2 {
   font-weight: bold;
 }
 
@@ -539,8 +555,11 @@ a {
   <p id="soundexport">
 To save the sound, right- or control-click the following link, select 
 "Save As..." and choose a name with a ".vgm" extension. <br/>
+  <i>(0,1,2 is the square wave channel played on. Noises are the same on all three and always use voice 2+noise)</i> <br/>
   <br/>
-  <a id="wav">sfx.wav</a> <br/>
+  <a id="wav0">sfx.vgm (0)</a> <br/>
+  <a id="wav1">sfx.vgm (1)</a> <br/>
+  <a id="wav2">sfx.vgm (2)</a> <br/>
   <a id="share">permalink</a> <br/>
   <a id="permalink"></a>
   <!-- <a id="sfx">sfx.wav</a><br/> -->
