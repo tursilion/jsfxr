@@ -923,8 +923,8 @@ SoundEffect.prototype.getRawBuffer = function () {
 
   vgm1[4]=vgm0[4];
   vgm1[5]=vgm0[5];
-  vgm1[5]=vgm0[6];
-  vgm1[6]=vgm0[7];
+  vgm1[6]=vgm0[6];
+  vgm1[7]=vgm0[7];
   vgm1[0x18]=vgm0[0x18];
   vgm1[0x19]=vgm0[0x19];
   vgm1[0x1a]=vgm0[0x1a];
@@ -932,8 +932,8 @@ SoundEffect.prototype.getRawBuffer = function () {
 
   vgm2[4]=vgm0[4];
   vgm2[5]=vgm0[5];
-  vgm2[5]=vgm0[6];
-  vgm2[6]=vgm0[7];
+  vgm2[6]=vgm0[6];
+  vgm2[7]=vgm0[7];
   vgm2[0x18]=vgm0[0x18];
   vgm2[0x19]=vgm0[0x19];
   vgm2[0x1a]=vgm0[0x1a];
